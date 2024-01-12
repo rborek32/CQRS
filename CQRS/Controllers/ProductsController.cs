@@ -1,6 +1,7 @@
 ﻿using CQRS.Commands;
 using CQRS.Model;
 using CQRS.Queries;
+using CQRS.Repository;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,13 @@ namespace CQRS.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly DataStore _dataStore;
 
     // public ProductsController(IMediator mediator) => _mediator = mediator;
-    public ProductsController(IMediator mediator)
+    public ProductsController(IMediator mediator, DataStore dataStore)
     {
         _mediator = mediator;
+        _dataStore = dataStore;
     }
     
     [HttpGet]
@@ -38,31 +41,27 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> AddProduct([FromBody] Product product)
     {
-        // await _mediator.Send(new AddProductCommand(product));
-        // return StatusCode(201);
-
         var productToReturn = 
             await _mediator.Send(new AddProductCommand(product));
 
-        return CreatedAtRoute("GetProductById", 
-            new {id = productToReturn.Id}, productToReturn);
+        if (product != null)
+        {
+            return CreatedAtRoute("GetProductById", 
+                new {id = productToReturn.Id}, productToReturn);
+        }
+        return NotFound("Product not found");
     }
 
     [HttpDelete]
     public async Task<ActionResult> DeleteProduct(int id)
     {
-        var deleteQuery = new DeleteProductByIdQuery(id); // Create the query with the product ID
-        var deletedProduct = await _mediator.Send(deleteQuery);
+        var product = await _mediator.Send(new GetProductByIdQuery(id));
 
-        if (deletedProduct != null)
+        if (product != null)
         {
-            return Ok("Product Deleted");
-        }
-        else
-        {
-            // Handle the case where the product was not found or couldn't be deleted
-            // Return a NotFound or BadRequest response, as appropriate.
-            return NotFound("Product not found or couldn't be deleted");
-        }
+            await _dataStore.DeleteProduct(product);
+            return Ok("Deleted");
+        } 
+        return NotFound("Product not found");
     }
 }

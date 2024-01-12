@@ -26,8 +26,18 @@ public class DataStore
     public async Task<IEnumerable<Product>> GetAllProducts() => 
         await Task.FromResult(_products);
 
-    public async Task<Product> GetProductById(int id) => 
-        await Task.FromResult(_products.Single(p => p.Id == id));
+    public async Task<Product> GetProductById(int id)
+    {
+        try
+        {
+            return await Task.FromResult(_products.Single(p => p.Id == id));
+        }
+        catch(Exception e)
+        {
+             Console.WriteLine("Product not found");
+        }
+        return null;
+    }
 
     public async Task DeleteProduct(Product product)
     {
