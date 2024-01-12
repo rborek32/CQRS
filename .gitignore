@@ -1,0 +1,42 @@
+# Ignore compiled binaries and build artifacts
+bin/
+obj/
+
+# Ignore Visual Studio or Rider specific files
+.vscode/
+.idea/
+
+# Ignore Rider user-specific files
+*.sln.iml
+
+# Ignore Rider and Visual Studio settings folders
+.idea/
+.vscode/
+
+# Ignore generated files
+*.dll
+*.exe
+*.pdb
+
+# Ignore NuGet package folder
+packages/
+*.nupkg
+
+# Ignore .NET and Rider specific files
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+
+# Ignore Rider folder
+.idea/
+
+# Ignore any other user-specific or IDE-specific files
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+
+# Ignore project-specific files
+*/bin/
+*/obj/
